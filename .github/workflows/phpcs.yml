@@ -50,4 +50,4 @@ jobs:
               run: vendor/bin/phpcs -i
 
             - name: Run PHPCS with WordPressVIPMinimum
-              run: vendor\bin\phpcs --standard=WordPressVIPMinimum --extensions=php,js,css wp-content/
+              run: vendor/bin/phpcs --standard=WordPressVIPMinimum --extensions=php,js,css wp-content/
