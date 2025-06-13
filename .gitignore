@@ -1,0 +1,18 @@
+# Ignore everything
+*
+
+# Allow specific folders at root
+!.gitignore
+!README.md
+!.github/
+!.github/**
+
+#themes and plugin folder allow
+!wp-content/
+!wp-content/themes/
+!wp-content/themes/headless-wp/
+!wp-content/themes/headless-wp/**
+
+# Ignore everything else in plugins/themes not explicitly included
+wp-content/themes/*
+!wp-content/themes/headless-wp/
