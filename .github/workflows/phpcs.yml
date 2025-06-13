@@ -1,38 +1,54 @@
 name: Run PHPCS - WordPressVIPMinimum
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
 
 jobs:
-  phpcs:
-    name: Run PHP_CodeSniffer
-    runs-on: ubuntu-latest
+    phpcs:
+        name: Run PHP_CodeSniffer
+        runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v3
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.1'
-          extensions: mbstring, xml
-          coverage: none
+            - name: Set up PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.1'
+                  extensions: mbstring, xml
+                  coverage: none
 
-      - name: Install Composer Dependencies
-        run: composer install --no-progress --no-suggest --prefer-dist
+            - name: Cache Composer dependencies
+              uses: actions/cache@v3
+              with:
+                  path: ~/.composer/cache
+                  key: composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: |
+                      composer-${{ runner.os }}-
 
-      - name: Set PHPCS installed paths
-        run: vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra,vendor/sirbrillig/phpcs-variable-analysis
+            - name: Validate composer.json and composer.lock
+              run: composer validate --strict
 
-      - name: Show Installed Standards
-        run: vendor/bin/phpcs -i
+            - name: Install Composer dependencies
+              run: composer install --no-progress --prefer-dist
 
-      - name: Run PHPCS with WordPressVIPMinimum
-        run: |
-          vendor/bin/phpcs --standard=WordPressVIPMinimum --extensions=php wp-content/
+            - name: Set PHPCS installed paths
+              run: |
+                  vendor/bin/phpcs --config-set installed_paths \
+                    vendor/wp-coding-standards/wpcs,\
+                    vendor/phpcsstandards/phpcsutils,\
+                    vendor/phpcsstandards/phpcsextra,\
+                    vendor/sirbrillig/phpcs-variable-analysis
+
+            - name: Show installed coding standards
+              run: vendor/bin/phpcs -i
+
+            - name: Run PHPCS with WordPressVIPMinimum
+              run: |
+                  vendor/bin/phpcs --standard=WordPressVIPMinimum --extensions=php wp-content/
