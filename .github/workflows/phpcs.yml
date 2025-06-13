@@ -14,7 +14,7 @@ jobs:
         runs-on: ubuntu-latest
 
         steps:
-            - name: Checkout Code
+            - name: Checkout code
               uses: actions/checkout@v3
 
             - name: Set up PHP
@@ -24,27 +24,23 @@ jobs:
                   extensions: mbstring, xml
                   coverage: none
 
-            - name: Cache Composer dependencies
-              uses: actions/cache@v3
-              with:
-                  path: ~/.composer/cache
-                  key: composer-${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
-                  restore-keys: |
-                      composer-${{ runner.os }}-
+            - name: Initialize Composer (if missing)
+              run: |
+                  if [ ! -f "composer.json" ]; then
+                    composer init --name="vip/wordpressvip" --require-dev=automattic/vipwpcs --no-interaction
+                  fi
 
-            - name: Validate composer.json and composer.lock
-              run: composer validate --strict
-
-            - name: Install Composer dependencies
-              run: composer install --no-progress --prefer-dist
+            - name: Require VIP WPCS and additional sniffs
+              run: |
+                  composer require --dev \
+                    automattic/vipwpcs \
+                    wp-coding-standards/wpcs \
+                    phpcsstandards/phpcsutils \
+                    phpcsstandards/phpcsextra \
+                    sirbrillig/phpcs-variable-analysis
 
             - name: Set PHPCS installed paths
-              run: |
-                  vendor/bin/phpcs --config-set installed_paths \
-                    vendor/wp-coding-standards/wpcs,\
-                    vendor/phpcsstandards/phpcsutils,\
-                    vendor/phpcsstandards/phpcsextra,\
-                    vendor/sirbrillig/phpcs-variable-analysis
+              run: vendor/bin/phpcs --config-set installed_paths vendor/wp-coding-standards/wpcs,vendor/automattic/vipwpcs,vendor/phpcsstandards/phpcsutils,vendor/phpcsstandards/phpcsextra,vendor/sirbrillig/phpcs-variable-analysis
 
             - name: Show installed coding standards
               run: vendor/bin/phpcs -i
