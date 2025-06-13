@@ -11,7 +11,7 @@
         "sirbrillig/phpcs-variable-analysis": "^2.12"
     },
     "scripts": {
-        "lint": "vendor/bin/phpcs --standard=WordPressVIPMinimum wp-content/"
+        "lint": "vendor/bin/phpcs --standard=WordPressVIPMinimum --extensions=php,js,css wp-content/"
     },
     "config": {
         "platform": {
