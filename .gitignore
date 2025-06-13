@@ -4,6 +4,7 @@
 # Allow specific folders at root
 !.gitignore
 !README.md
+!composer.json
 !.github/
 !.github/**
 
